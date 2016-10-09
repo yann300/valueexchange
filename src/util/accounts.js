@@ -1,16 +1,17 @@
 var helpers = require('./helpers')
 var curve = require('./curve')
-var refillAmount = 500
-var refillDelay = 14
 
 module.exports = {
+  refillAmount: null,
+  refillDelay: null,
+
   refill: function (account, blocks, accounts) {
     var events = accounts[account].events
-    if (events.length === 0 || blocks.block - accounts[account].lastRefill > refillDelay) {
+    if (events.length === 0 || blocks.block - accounts[account].lastRefill > this.refillDelay) {
       var event = {
         type: 'refill',
         block: blocks.block,
-        amount: refillAmount
+        amount: this.refillAmount
       }
       events.push(event)
       accounts[account].lastRefill = blocks.block

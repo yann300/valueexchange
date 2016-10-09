@@ -2,7 +2,10 @@ var accounts = require('./util/accounts')
 var transactions = require('./util/transactions')
 var Blocks = require('./blocks')
 var accountsHelpers = require('./util/accounts')
-var FunctionGraph = require('function-graph')
+var graph = require('./graph')
+var curve = require('./util/curve')
+
+setParameters()
 
 var blockTimer = new Blocks()
 var accountPool = accounts.retrieveAllAccounts()
@@ -19,35 +22,32 @@ function trackAccountsBalance () {
   }
 }
 
-
 // transactions.executeBlankStory(blockTimer, 20, trackAccountsBalance)
 transactions.executeStory(blockTimer, accountPool, trackAccountsBalance)
 
-for (var k in accountsBalance) {
-  graph(k, accountsBalance[k])
-}
+graph.drawGraph(accountsBalance)
 
-function graph (account, points) {
-  var height = 30
-  var graph = new FunctionGraph({
-    height: height * 2,
-    width: 160,
-    marks: {
-      hAxis: '─',
-      vAxis: '│',
-      center: '┼',
-      point: '•'
-    }
-  })
-
-  for (var i = 0; i < points.length; i++) {
-    // console.log(i + ' ' + points[i] / height)
-    graph.addPoint(i, points[i] / height)
+function setParameters () {
+  console.log(process.argv)
+  var X0 = 20 // block time to 0
+  var A2 = 0.20 // decreasing coeff
+  var refillAmount = 500
+  var refillDelay = 14
+  if (process.argv.length > 2) {
+    process.argv.map(function (item, i) {
+      if (item === '-lifetime') {
+        X0 = parseInt(process.argv[i + 1])
+      } else if (item === '-curve') {
+        A2 = parseFloat(process.argv[i + 1])
+      } else if (item === '-refill') {
+        refillAmount = parseInt(process.argv[i + 1])
+      } else if (item === '-delay') {
+        refillDelay = parseInt(process.argv[i + 1])
+      }
+    })
   }
-
-  console.log('\n')
-  console.log(account + ':')
-  console.log(graph.toString())
-  console.log('\n')
-  console.log('\n')
+  accounts.refillAmount = refillAmount
+  accounts.refillDelay = refillDelay
+  curve.X0 = X0
+  curve.A2 = A2
 }

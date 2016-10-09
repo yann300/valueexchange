@@ -1,11 +1,11 @@
 module.exports = {
-  A1: 20, // block time to 0
-  A2: 0.25, // decreasing coeff
+  X0: null, // block time to 0
+  A2: null, // decreasing coeff
   currentBalanceState: function (refillBlock, blocks) {
     var ret = blocks.block - refillBlock
-    ret = (ret - this.A1) * this.A2
-    ret = Math.exp(ret)
-    ret = 1 - ret
+    ret = 1 - Math.exp(this.A2 * (ret - this.X0))
+    var div = (1 - Math.exp(-this.A2 * this.X0))
+    ret = ret / div
     return ret < 0 ? 0 : ret
   }
 }
