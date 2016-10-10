@@ -1,6 +1,7 @@
 # valueexchange
 
 npm install
+
 node src/main.js
 
 https://www.npmjs.com/package/plotter
